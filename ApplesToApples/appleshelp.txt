@@ -1,0 +1,12 @@
+help	Provides help. Use !Apples Help Commands for commands or !Apples Help Rules for the rules of the game
+commands	Current list of commands: help, start, end, join, players, play, pick, score, hand
+start	Starts a game
+players	List players in the current game (if one is running)
+end	Ends the game. A game must be in progress.
+join	Join the game in progess
+play	Plays a card from your hand. A game must be in progress and you must not be judging this round.
+pick	Selects a card from the list of played cards. A game must be in progress and you must be the judge.
+score	Shows the current score. A game must be running.
+hand	Asks the bot to PM you your hand. Please don't spam, it delays the bot considerably. 
+quit	Removes you from the game in progress. 
+rules	For the rules to Apples to Apples, see http://www.com-www.com/applestoapples/applestoapples-rules-official-basicset.html

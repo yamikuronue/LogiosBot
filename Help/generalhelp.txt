@@ -1,0 +1,11 @@
+help	Provides help. Use Help Commands for commands
+commands	Current list of general commands: !join, !part, !reactions, !modules
+!hollingsworth	Provides hollingsworth functions. Use !Hollingsworth help for more specifics. 
+!holli	Provides outsiders functions. Use !Holli help for more specifics. 
+hollingsworth	Hollingsworth is a BESM game in the Crossroads RP Network. For Holli commands, use !Hollingsworth help
+holli	Hollingsworth is a BESM game in the Crossroads RP Network. For Holli commands, use !Hollingsworth help
+reactions	Toggles personality reactions for the current room. Use: !reactions off or !reactions on.
+join	Tells the bot to join a room. Use: !join <room>
+part	Tells the bot to leave a room. Use: !part <room>
+Apples	Commands for the card game Apples to Apples. For command list, use !Apples help
+modules	Lists the modules currently installed. For help on any module, use !ModuleName help (ex: !Apples help)
