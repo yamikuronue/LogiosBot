@@ -1,3 +1,0 @@
-help	Provides help. Use !TvTropes Help Commands for usage
-commands	To activate, simply type the name of a trope (in WikiLinkStyle, aka CamelCase), like so: !TvTropes FiveManBand. 
-
