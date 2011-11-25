@@ -201,9 +201,6 @@ sub parse {
 	
 	Logios::log("Parsing " . $string);
 	
-
-	#First split on + or - to give individual tokens
-	#sample inputs: 1d6, 1d6+4, 1d6-3, 1d6+1d4+12, 1d20-1d4+13, et cetera. 
 	my $plus = rindex($string,'+');
 	my $minus = rindex($string,'-');
 	
@@ -213,7 +210,7 @@ sub parse {
 		return ($total,$output);
 	}
 	if ($plus > $minus) {
-		#($left,$right) = split(/\+/,$string,2);   #This seemed intuitive, but it created bugs with order of operations
+		#($left,$right) = split(/\+/,$string,2);   #Created bugs with order of operations
 		$right = substr($string,$plus+1);
 		$left = substr($string,0,$plus);
 		

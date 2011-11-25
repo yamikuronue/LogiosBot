@@ -1,36 +1,6 @@
 package Apples;
 $VERSION = 1.0;
 
-=pod
-
-=head1 NAME
-Apples: A game for IRC bot LogiosBot
-
-=head1 DESCRIPTION
-A module for LogiosBot that more or less plays Apples to Apples over IRC. 
-
-=head1 USEAGE
-To start a game: !apples start
-To join a game in progress: !apples join 
-To quit a game you have joined: !apples quit
-To see your hand: !apples hand. This will show your hand via PM. 
-To play a card (non-judge): !apples play Cardname
-To select a card (judge): !apples pick Cardname
-To end the game: !apples end. 
-
-=head1 Gameplay
-The game requires at least three players, each of whom is dealt a hand of noun cards that is kept secret. 
-Each round, one player will be announced as the judge. An adjective card will be drawn for the judge and played onto the table. 
-Each non-judge player must then play a noun card that they feel matches the adjective card best. 
-When all non-judge players have played their cards, they will be presented anonymously to the judge. The judge must select the best fit from the card presented. 
-
-=head1 Author
-Yamikuronue - yamikuronue at gmail.com
- 
-
-
-=cut
-
 #%settings;
 
 BEGIN {

@@ -1,0 +1,33 @@
+===Required Routines===
+All modules must have a BEGIN block:
+
+BEGIN {
+	$VERSION = X.XX;  #version number for the module
+	$Config::modules{'ModuleName'} = 1;  #Name of the module goes here
+}
+
+
+
+
+All modules must have the following routines:
+*  A sub named "examine" which takes an input string, a channel, and a nick for who said it 
+** This will parse the input to do work. It will be called every time a line is spoken.
+** It should return '1' if the input was parsed by it, or '0' if the input meant nothing to it
+
+* A sub named module_info
+** This should take a channel as input and send to the output queue information about the module.
+
+
+===Helpful Hints===
+*To print to the IRC queue, call Logios::IRCPrint("#channel","Output to print"). 
+** This will break up overly long input as well as handle the POE coordination. Just go ahead and send raw input to it.
+** To print characters in bold, use "\x02" as the bold-toggle (Example: "a \x02bold\x02 word"). 
+
+*To print to the log, use Logios::log
+
+*It is more polite to prefix your module's commands with !Modulenmae
+** For example, !Module command is nicer than !Command
+
+*A help file should go in the /Help folder 
+** Help files should store a list of commands and a blurb about each one
+** It is polite to have your module respond to !modulename Help and !Modulename with information from this help file. 

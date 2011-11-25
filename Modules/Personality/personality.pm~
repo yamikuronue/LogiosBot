@@ -2,25 +2,6 @@ package Reaction;
 $VERSION = 1.5;
 
 #%settings;
-=pod
-
-=head1 NAME
-Reactions: Sample personality quirks for LogiosBot
-
-=head1 DESCRIPTION
-Personality quirks for LogiosBot. I suggest customizing this to fit your group!
-
-=head1 USEAGE
-To disable reactions for a channel, use !reactions off. 
-to re-enable them, use !reactions on
-This is channel specific. 
-
-=head1 Author
-Yamikuronue - yamikuronue at gmail.com
-
-=head1 LICENSE
-gpl 3.0
-=cut
 
 BEGIN {
 	$version = 1.5;

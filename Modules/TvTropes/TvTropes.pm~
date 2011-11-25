@@ -1,25 +1,4 @@
 package TvTropes;
-=pod
-
-=head1 NAME
-TvTropes: A TvTropes plugin for LogiosBot
-
-=head1 DESCRIPTION
-A module for LogiosBot that searches TvTropes for you
-
-=head1 USEAGE
-!trope TropeName
-!tvtropes Tropename
-
-Searches TvTropes for a trope and links
-
-
-=head1 Author
-Yamikuronue - yamikuronue at gmail.com
- 
-
-
-=cut
 
 require LWP::Simple;
 require LWP::UserAgent;
@@ -71,7 +50,7 @@ sub examine {
 }
 sub module_info {
 	my $where = shift;
-	Logios::IRC_print($where, "TvTropes Functions version $TvTropes::VERSION. Copyright 2011. Created by Yami Kuronue.");
+	Hermes::IRC_print($where, "TvTropes Functions version $TvTropes::VERSION. Copyright 2011. Created by Yami Kuronue.");
 }
 
 sub help {
@@ -86,7 +65,7 @@ sub topic_help {
 	my $response;
 	my $found = 0;
 	
-	open FILE, $Logios::install_Directory . "/Help/tvtropeshelp.txt";
+	open FILE, $Hermes::install_Directory . "/Help/tvtropeshelp.txt";
 	my @filearray=<FILE>;
 	close(FILE);
 
@@ -98,9 +77,9 @@ sub topic_help {
 	}
 	
 	if ($found) {
-		Logios::IRC_print($where, $response);
+		Hermes::IRC_print($where, $response);
 	} else {
-		Logios::IRC_print($where, "Command not found. Help Commands for commands");
+		Hermes::IRC_print($where, "Command not found. Help Commands for commands");
 	}
 }
 
@@ -112,8 +91,8 @@ sub link_to {
 
 
 	if ($thing =~ /\/..\//) {
-		Logios::log($channel,"Error for " . $thing . ": contained invalid sequence");
-		Logios::IRC_print($channel,"R...Red? Is that y-you? I... I mean... *cough* Invalid link.");
+		Hermes::log($channel,"Error for " . $thing . ": contained invalid sequence");
+		Hermes::IRC_print($channel,"R...Red? Is that y-you? I... I mean... *cough* Invalid link.");
 		return;
 	}
 	$thing = ucfirst($thing);
@@ -136,29 +115,29 @@ sub link_to {
 		my $request = HTTP::Request->new(GET => $URL);
 		my $response = $browser->request($request);
 		if ($response->is_error()) {
-			Logios::log($channel,"Error for " . $URL . ": " .$response->status_line);
-			Logios::IRC_print($channel,"Invalid link.");
+			Hermes::log($channel,"Error for " . $URL . ": " .$response->status_line);
+			Hermes::IRC_print($channel,"Invalid link.");
 			return;
 		}
 		else {
 			my $raw = $response->content();
 		
 			if ($raw =~ /This wiki is a catalog of the tricks of the trade for writing fiction./) {
-				Logios::IRC_print($channel,$thing . " appears to lead to the home page: http://tvtropes.org/pmwiki/pmwiki.php/Main/HomePage");
-				Logios::log("Found the home page.");
+				Hermes::IRC_print($channel,$thing . " appears to lead to the home page: http://tvtropes.org/pmwiki/pmwiki.php/Main/HomePage");
+				Hermes::log("Found the home page.");
 				return;
 			}
 			if (!($raw =~ /Click the edit button to start this new page/i)) {
-				Logios::IRC_print($channel,$thing . ": " . $URL);
-				Logios::log($thing . ": " . $URL);
+				Hermes::IRC_print($channel,$thing . ": " . $URL);
+				Hermes::log($thing . ": " . $URL);
 				$found++;
 			}
 		}
 	}
 
 	if ($found == 0) {
-		Logios::IRC_print($channel,"Sorry, " . $thing . " appears to be a redlink.");
-		Logios::log("Sorry, I don't know what trope " . $thing . " is.");
+		Hermes::IRC_print($channel,"Sorry, " . $thing . " appears to be a redlink.");
+		Hermes::log("Sorry, I don't know what trope " . $thing . " is.");
 	}
 	return;
 }
