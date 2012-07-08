@@ -141,8 +141,19 @@ sub topic_help {
 	my $response;
 	my $found = 0;
 	
-	open FILE, $Logios::install_Directory . "/Help/appleshelp.txt";
+	($volume, $directories,$file) = File::Spec->splitpath( $install_Directory );
+	@dirs = File::Spec->splitdir( $directories );
+	push(@dirs,"Help");
+	$helppath = File::Spec->catfile( @dirs, "appleslhelp.txt" );
+	open FILE, $helppath;
+	
+	#check if file is open
+	if (tell FILE == -1) {
+	    IRC_print($where, "Error getting help file. Is my config correct?");
+	    return;
+	}
 	@filearray=<FILE>;
+
 	close(FILE);
 
 	foreach $line (@filearray) {

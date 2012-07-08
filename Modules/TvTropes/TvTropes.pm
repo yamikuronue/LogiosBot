@@ -86,8 +86,19 @@ sub topic_help {
 	my $response;
 	my $found = 0;
 	
-	open FILE, $Logios::install_Directory . "/Help/tvtropeshelp.txt";
-	my @filearray=<FILE>;
+	($volume, $directories,$file) = File::Spec->splitpath( $install_Directory );
+	@dirs = File::Spec->splitdir( $directories );
+	push(@dirs,"Help");
+	$helppath = File::Spec->catfile( @dirs, "tvtropeshelp.txt" );
+	open FILE, $helppath;
+	
+	#check if file is open
+	if (tell FILE == -1) {
+	    IRC_print($where, "Error getting help file. Is my config correct?");
+	    return;
+	}
+	@filearray=<FILE>;
+
 	close(FILE);
 
 	foreach my $line (@filearray) {

@@ -106,9 +106,19 @@ sub topic_help {
 	my $response;
 	my $found = 0;
 	
-	open FILE, $Config::install_Directory . "/Help/dicehelp.txt";
-	#open FILE, "Help/hollihelp.txt";
+	($volume, $directories,$file) = File::Spec->splitpath( $install_Directory );
+	@dirs = File::Spec->splitdir( $directories );
+	push(@dirs,"Help");
+	$helppath = File::Spec->catfile( @dirs, "dicehelp.txt" );
+	open FILE, $helppath;
+	
+	#check if file is open
+	if (tell FILE == -1) {
+	    IRC_print($where, "Error getting help file. Is my config correct?");
+	    return;
+	}
 	@filearray=<FILE>;
+
 	close(FILE);
 
 	foreach $line (@filearray) {
