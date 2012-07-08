@@ -21,7 +21,7 @@ use FindBin qw($Bin);
 push @INC,$Bin;
 push @INC ,"/usr/local/lib/perl5/site_perl/5.10.1/";
 
-require("Config.pm");
+require("Logios_Config.pm");
 $install_Directory = $Config::install_Directory;
 push @INC,$install_Directory; #Fix for running from rc.local
 
