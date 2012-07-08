@@ -15,7 +15,7 @@
 
 #!/usr/bin/perl
 package Logios;
-$VERSION = 3.6;
+$VERSION = 3.5;
 
 use FindBin qw($Bin);
 push @INC,$Bin;
@@ -30,18 +30,24 @@ use warnings;
 use Safe;
 use POE;
 use POE::Component::IRC;
+use POE::Wheel::SocketFactory;
+use POE::Wheel::ReadWrite;
 use Module::Reload;
 use Math::Expression::Evaluator;
+use IO::Socket::UNIX;
 
 my $quit = 0; #By default, we are not attempting to quit the bot
 our %Channels; #Tracks a list of channels. This will be populated at connection time from the config
+our @clients;
 
 #Config file
 my $botnick = $Config::botnick;
 our $quitpassword = $Config::password;
 my $server = $Config::server;
 my $port = $Config::port;
+my $socketfile = $Config::socketfile;
 #my @CHANNEL = @Config::channels;
+my @sockets;
 
 
 #Load modules
@@ -65,6 +71,11 @@ POE::Session->create(
 	irc_error        => \&on_disconnect,
 	irc_socketerr    => \&on_disconnect,
 	irc_ctcp_action => \&on_me,
+	got_client => \&socket_addclient,
+	got_error => \&socket_error,
+	on_client_input => \&client_spoke,
+	on_client_error => \&client_error
+
 
   },
 );
@@ -92,6 +103,49 @@ sub bot_start {
     }
     );
     
+    
+  unlink $socketfile if -e $socketfile;
+  $heap->{server} = POE::Wheel::SocketFactory->new(
+    SocketDomain => PF_UNIX,
+    BindAddress  => $socketfile,
+    SuccessEvent => 'got_client',
+    FailureEvent => 'got_error',
+  );
+}
+
+
+######## SOCKET REACTIONS ########
+#We have a gui monitor
+sub socket_addclient() {
+	my $client_socket = $_[ARG0];
+    my $io_wheel = POE::Wheel::ReadWrite->new(
+      Handle => $client_socket,
+      InputEvent => "on_client_input",
+      ErrorEvent => "on_client_error",
+    );
+    $_[HEAP]{client}{ $io_wheel->ID() } = $io_wheel;
+    push(@clients,$io_wheel);
+    #we can now speak to the client with
+    # $_[HEAP]{client}{$wheel_id}->put($output);
+}
+
+sub socket_error {
+	# Shut down server.
+    my ($operation, $errnum, $errstr) = @_[ARG0, ARG1, ARG2];
+    warn "Server $operation error $errnum: $errstr\n";
+    log_error("Server $operation error $errnum: $errstr\n");
+    delete $_[HEAP]{server};
+}
+
+sub client_spoke {
+	my ($input, $wheel_id) = @_[ARG0, ARG1];
+	# todo: write things like chanlist fetching here
+}
+sub client_error {
+	# Handle client error, including disconnect.
+    my $wheel_id = $_[ARG3];
+    delete $_[HEAP]{client}{$wheel_id};
+    #push(@clients,$io_wheel);
 }
 
 ###### IRC REACTIONS ########
@@ -129,7 +183,7 @@ sub on_public {
 	my $channel = $where->[0];
 	my $ts      = scalar localtime;
 	my $type = "public";
-	
+
 	#core functions
 	examine($text,$channel,$nick);
 
@@ -147,7 +201,7 @@ sub on_me {
 	my $channel = $where->[0];
 	my $ts      = scalar localtime;
 	my $type = "action";
-	
+
 	#core functions
 	examine($text,$channel,$nick);
 
@@ -182,7 +236,7 @@ sub examine {
 	my $input = shift;
 	my $channel = shift;
 	my $nick = shift;
-	
+
 	#IRC commands
 	if ($input =~ /^\!(\w+)\s(.+)/i) {  #"!word word
 		$word2 = $2;
@@ -253,6 +307,7 @@ sub IRC_join {
 	$Channels{$where} = Channel::new($where);
 	$irc->yield(join => $where);
 	Logios::log("Joined " . $where);
+	broadcast("Join: " . $where);
 }
 
 sub IRC_part {
@@ -260,6 +315,7 @@ sub IRC_part {
 	delete $Channels{$where};
 	$irc->yield(part => $where);
 	Logios::log("Parted " . $where);
+	broadcast("Part: " . $where);
 }
 
 #General help, from helpfile
@@ -269,10 +325,10 @@ sub general_help {
 
 	my $response;
 	my $found = 0;
-	
+
 	open FILE, $install_Directory . "/Help/generalhelp.txt";
 	@filearray=<FILE>;
-	
+
 
 	foreach $line (@filearray) {
 		if ($line =~ /^$what\t(.+)/i) {
@@ -319,7 +375,7 @@ sub IRC_print {
 	my $where = shift;
 	my $text = shift;
 	#$text =~ s/\\([^\\])/$1/;   #Removed for performance issues
-	 
+
 	if (!defined($irc)) {
 		use Carp;
 		confess "We've had an error here in IRC_print";
@@ -329,9 +385,21 @@ sub IRC_print {
 		IRC_print($where,substr($text,399,length($text)-399));
 	} else {
 		$irc->yield(privmsg => $where, $text);
+		broadcast("Output: " . $where . ": " . $text);
 	}
 }
 
+#Inform monitors that things happened
+sub broadcast {
+	my $output = shift;
+	#my @clients = $_[HEAP]{client};
+	use Data::Dumper;
+	if (!defined($_[HEAP]{client})){ return};
+	foreach (@clients) {
+		 $_->put($output);
+		 #$wheel_id->put($output);
+	}
+}
 
 #Log normal operations
 sub log {
@@ -341,6 +409,7 @@ sub log {
 	my $timestamp = sprintf("%.2d:%.2d:%.2d", $hour, $minute,$second);
 	print LOG $timestamp . ": " . $string . "\r\n";
 	close LOG;
+	broadcast("Log: " . $timestamp . ": " . $string . "\r\n");
 }
 
 #Log errors
@@ -351,6 +420,7 @@ sub log_error {
 	my $timestamp = sprintf("%.2d:%.2d:%.2d", $hour, $minute,$second);
 	print LOG $timestamp . ": " . $string . "\r\n";
 	close LOG;
+	broadcast("Error: " . $timestamp . ": " . $string . "\r\n");
 }
 
 
