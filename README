@@ -1,4 +1,4 @@
-=Logios v4=
+=Logios v3.6=
 
 ==What is Logios?==
 Logios is an IRC bot written in perl. It is designed to be customizable via the addition of simple modules, also written in perl. 
