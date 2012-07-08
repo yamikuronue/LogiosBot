@@ -32,6 +32,7 @@ use POE;
 use POE::Component::IRC;
 use Module::Reload;
 use Math::Expression::Evaluator;
+use File::Spec;
 
 my $quit = 0; #By default, we are not attempting to quit the bot
 our %Channels; #Tracks a list of channels. This will be populated at connection time from the config
@@ -286,8 +287,20 @@ sub general_help {
 	my $response;
 	my $found = 0;
 	
-	open FILE, $install_Directory . "/Help/generalhelp.txt";
+	($volume, $directories,$file) = File::Spec->splitpath( $install_Directory );
+	@dirs = File::Spec->splitdir( $directories );
+	push(@dirs,"Help");
+	$helppath = File::Spec->catfile( @dirs, "generalhelp.txt" );
+	open FILE, $helppath;
+	
+	#check if file is open
+	if (tell FILE == -1) {
+	    IRC_print($where, "Error getting help file. Is my config correct?");
+	    return;
+	}
 	@filearray=<FILE>;
+
+
 	
 
 	foreach $line (@filearray) {
