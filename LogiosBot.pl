@@ -130,6 +130,22 @@ sub on_public {
 	my $ts      = scalar localtime;
 	my $type = "public";
 	
+
+	#Filtration
+	my %filter = map { $_ => 1 } @Config::filterList;
+	if ($Config::filterMode eq "whitelist") {
+	    if(!exists($filter{$nick})) {
+	      return;
+	    }
+	}
+
+	if ($Config::filterMode eq "blacklist") {
+	    if(exists($filter{$nick})) {
+	      return;
+	    }
+	}
+
+      
 	#core functions
 	examine($text,$channel,$nick);
 

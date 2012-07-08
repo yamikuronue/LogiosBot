@@ -28,6 +28,13 @@ $server = 'localhost';
 $port = '6667';
 @channels = ('#outsiders_ooc','#muelsfell_tomu');
 
+#Filters
+#Required:
+#	filterMode: "whitelist", "blacklist", or "off"
+#	filterList: a list of nicks to filterList
+$filterMode = 'off';
+@filterList = ('nobody');
+
 
 #Personalized data
 #Required:
