@@ -8,7 +8,6 @@ BEGIN {
 ###################BEGIN CUSTOMIZABLE CONFIG#################
 
 #Program data
-
 #Required:
 #   install_Directory: the directory in which Logios is installed
 #   logfile: the file to use for logging normal behavior
@@ -44,6 +43,15 @@ $password = 'Logios';
 $modules{ 'Config' } = 1;
 
 @modulefiles = ('TvTropes.pm','LogiDice.pm','logfunctions.pm','personality.pm','Apples.pm');
+
+
+
+####Advanced####
+#Socket Data
+#Required:
+# 	socketfile: The file to use as a socket to communicate with plugins
+$socketfile = '/tmp/logiossocket';
+
 
 
 ################END CUSTOMIZABLE CONFIG#################
