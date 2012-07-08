@@ -10,7 +10,10 @@ Just the core module, LogiosBot.pl, and a Logios_Config.pm defining what options
 Make sure the Config file is in the same folder as the core bot, and that the generalhelp.txt file is in the subdirectory Help. Then just run the bot.
 
 ==How do I install a module?==
-Put it's core file in the same folder as LogiosBot and its help file in the Help folder. Then just edit the config to load the module by name and voila. 
+New method: Run module_installer, passing it the folder containing the module. Example: "perl module_install Modules/TvTropes"
+Manual install: Put the core file ("modulename.pm") in the same folder as LogiosBot and its help file ("modulehelp.txt") in the Help folder.
+
+Then just edit the config to load the module by name and voila. 
 
 ==What format do modules need to be in?==
 See ModulesFormat.txt
