@@ -24,6 +24,7 @@ GPL 3.0. See LogiosBot.pl for details.
 =cut
 
 #LogiosDice: Your basic dice module for Logiosbot
+use Math::Random::MT qw(rand);
 
 BEGIN {
 	$VERSION = 1.75;
