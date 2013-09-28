@@ -1,0 +1,3 @@
+help	Provides help. Use !Wordpress Help Commands for commands
+commands	Current list of commands: help, upload.
+upload	Uploads a session to wordpress as a draft. Syntax: !Wordpress upload ##, where ## is the session number.
