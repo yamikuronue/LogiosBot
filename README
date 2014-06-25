@@ -4,7 +4,7 @@
 Logios is an IRC bot written in perl. It is designed to be customizable via the addition of simple modules, also written in perl. 
 
 ==What do I need to run Logios?==
-Just the core module, LogiosBot.pl, and a Logios_Config.pm defining what options you would like. You probably want to modify the one in the repository. 
+Just the core module, LogiosBot.pl, and a Logios_Config.pm defining what options you would like. You probably want to modify the sample in the repository; don't forget to rename it though. 
 
 ==How do I install LogiosBot?==
 Make sure the Config file is in the same folder as the core bot, and that the generalhelp.txt file is in the subdirectory Help. Then just run the bot.
