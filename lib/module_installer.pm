@@ -46,7 +46,7 @@ while ($filename = readdir(DIR)) {
       if ($filename =~ m/\.pm$/) {
 	  $from = File::Spec->catfile(@indirs,$filename);
 	  $to = File::Spec->catfile(@outdirs, $filename);
-	  print "Installing module $filename \n";
+	  print "Installing module $filename to $to\n";
 	  copy($from,$to);
       }
 
