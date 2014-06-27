@@ -33,8 +33,8 @@
     print FILE $install_directory;
     print FILE "\";\n"; 
 
-    getValueAndWrite("Log file name", $logfile, "Logios.log");
-    getValueAndWrite("Error file name", $errorfile, "error.log");
+    getValueAndWrite("Log file name", "\$logfile", "Logios.log");
+    getValueAndWrite("Error file name", "\$errorfile", "error.log");
 
 
   }
