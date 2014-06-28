@@ -3,11 +3,13 @@ use Module::Build;
   my $logiosBuild = Module::Build->subclass(
       class => "Module::Build::Custom",
       code => <<'SUBCLASS' );
-	  require File::Copy;
+	  
+	  use File::Copy "copy";
+	  use File::Spec::Functions qw(catfile splitpath splitdir);
+	  
       sub ACTION_install {
         my $self = shift;
 
-		
 		print "Would you like to create a custom config file? [Y/n]";
 		$input = <STDIN>;
 		chomp($input);
@@ -66,7 +68,7 @@ use Module::Build;
 		if (!$first) {
 			$modulelist = $modulelist . ",";
 		}
-		$modulelist = $modulelist . "'" . installModuleAndGetName($dir, $install_directory) . "'";
+		$modulelist = $modulelist . "'" . installModuleAndGetName($moduleDir . "/" . $filename, $install_directory) . "'";
 		$first = 0;
 	}
 
@@ -148,19 +150,19 @@ FILEFOOTER
 	my $folder = shift;
 	my $install_directory = shift;
 	my $moduleFile;
-	opendir (DIR, $folder) or die "Invalid folder: " . $!;
+	opendir (DIR, $folder) or die "Invalid folder $folder: " . $!;
 
 	while ($filename = readdir(DIR)) {
 		next if ($filename =~ m/^\./);
 
-		($volume, $directories,$file) = File::Spec->splitpath( $install_Directory );
-		@outdirs = File::Spec->splitdir( $directories );
-		@indirs = File::Spec->splitdir( $directories );
+		($volume, $directories,$file) = splitpath( $install_Directory );
+		@outdirs = splitdir( $directories );
+		@indirs = splitdir( $directories );
 		push(@indirs,$folder);
 
 		if ($filename =~ m/\.pm$/) {
-			$from = File::Spec->catfile(@indirs,$filename);
-			$to = File::Spec->catfile(@outdirs, $filename);
+			$from = catfile(@indirs,$filename);
+			$to = catfile(@outdirs, $filename);
 			print "Installing module $filename to $to\n";
 			copy($from,$to);
 			$modulefile = $filename;
@@ -168,8 +170,8 @@ FILEFOOTER
 
 		if ($filename =~ m/help.txt$/) {
 			push(@outdirs,"Help");
-			$from = File::Spec->catfile(@indirs,$filename);
-			$to = File::Spec->catfile(@outdirs, $filename);
+			$from = catfile(@indirs,$filename);
+			$to = catfile(@outdirs, $filename);
 			print "Installing help $filename \n";
 			copy($from,$to);
 		}
