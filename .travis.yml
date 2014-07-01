@@ -3,5 +3,5 @@ perl:
   - "5.16"
   - "5.14"
 before_install: perl Build.PL
-install: ./Build installdeps
+install: yes | ./Build installdeps
 script: ./Build && ./Build test
