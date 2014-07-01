@@ -2,3 +2,6 @@ language: perl
 perl:
   - "5.16"
   - "5.14"
+before_install: perl Build.PL
+install: ./Build installdeps
+script: ./Build && ./Build test
