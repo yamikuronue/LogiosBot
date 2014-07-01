@@ -193,7 +193,7 @@ SUBCLASS
 				'Module::Reload'  => 0,
 				'Math::Expression::Evaluator'  => 0,
 				'File::Spec'  => 0,
-				'Findbin'  => 0,
+				'FindBin'  => 0,
 			},
 	recommends => {
 				'Math::Random::MT' => 0,
