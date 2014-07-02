@@ -1,22 +1,22 @@
-package Apples;
+package CAH;
 $VERSION = 1.0;
 
 =pod
 
 =head1 NAME
-Apples: A game for IRC bot LogiosBot
+Cards Against Humanity: A game for IRC bot LogiosBot
 
 =head1 DESCRIPTION
-A module for LogiosBot that more or less plays Apples to Apples over IRC. 
+A module for LogiosBot that more or less plays Cards Against Humanity over IRC. 
 
 =head1 USEAGE
-To start a game: !apples start
-To join a game in progress: !apples join 
-To quit a game you have joined: !apples quit
-To see your hand: !apples hand. This will show your hand via PM. 
-To play a card (non-judge): !apples play Cardname
-To select a card (judge): !apples pick Cardname
-To end the game: !apples end. 
+To start a game: !cah start
+To join a game in progress: !cah join 
+To quit a game you have joined: !cah quit
+To see your hand: !cah hand. This will show your hand via PM. 
+To play a card (non-judge): !cah play Cardname
+To select a card (judge): !cah pick Cardname
+To end the game: !cah end. 
 
 =head1 Gameplay
 The game requires at least three players, each of whom is dealt a hand of noun cards that is kept secret. 
@@ -35,11 +35,11 @@ Yamikuronue - yamikuronue at gmail.com
 
 BEGIN {
 	$Config::modules{'Apples'} = 1;
-	$filepath = $Config::AppleFilePath;
+	$filepath = $Config::CahFilePath;
 
 	# read files
 	$nouncount = 0;
-	open (NOUNS, $filepath . "/Nouns.txt") or die "Could not read noun file at " . $filepath . "/nouns.txt";
+	open (NOUNS, $filepath . "/White.txt") or die "Could not read noun file at " . $filepath . "/nouns.txt";
 	while ($line = <NOUNS>) {
 		($noun,$desc) = split(/ - /,$line);
 		push(@nouns,$noun);
@@ -49,7 +49,7 @@ BEGIN {
 	close (NOUNS);
 
 	$adjectivecount = 0;
-	open (ADJECTIVES, $filepath . "/Adjectives.txt") or die "Could not read adjective file";
+	open (ADJECTIVES, $filepath . "/Black.txt") or die "Could not read adjective file";
 	while ($line = <ADJECTIVES>) {
 		($adj,$desc) = split(/ - /,$line);
 		push(@adjectives,$adj);
@@ -72,11 +72,11 @@ sub examine {
 	my $type = shift;
 
 	$text =~ s/\s+$//;
-	if ($text =~ /^!apples (.+)/i) {
+	if ($text =~ /^!cah (.+)/i) {
 		$input = $1;
-	} elsif ($text =~ /^!Apples (.+)/i) {
+	} elsif ($text =~ /^!cah (.+)/i) {
 		$input = $1;
-	} elsif ($text =~ /^!Apples$/i) {
+	} elsif ($text =~ /^!cah$/i) {
 		module_info($where);
 		return 1;
 	} else {
@@ -144,7 +144,7 @@ sub topic_help {
 	($volume, $directories,$file) = File::Spec->splitpath( $install_Directory );
 	@dirs = File::Spec->splitdir( $directories );
 	push(@dirs,"Help");
-	$helppath = File::Spec->catfile( @dirs, "appleslhelp.txt" );
+	$helppath = File::Spec->catfile( @dirs, "CAHhelp.txt" );
 	open FILE, $helppath;
 	
 	#check if file is open
@@ -178,8 +178,8 @@ sub start_game {
 		return;
 	}
 	
-	Logios::IRC_print($where,"Welcome to Apples to Apples! I will be using this channel for the game.");
-	Logios::IRC_print($where,"To join the game, type !Apples join at any time.");
+	Logios::IRC_print($where,"Welcome to Cards Against Humanity! I will be using this channel for the game.");
+	Logios::IRC_print($where,"To join the game, type !cah join at any time.");
 	Logios::IRC_print($where,"When at least three people have joined, the game will begin properly.");
 	$games{$where} = Game::new($where);
 	
@@ -380,7 +380,7 @@ sub show_hand {
 
 	for ($i = 0; $i < 7; $i++) {
 		$card = $hand[0][$i];
-		Logios::IRC_print($self->{_nick}, "Card " . $i . " : " . $card->{"name"} . ": " . $card->{"desc"});
+		Logios::IRC_print($self->{_nick}, "Card " . $i . " : " . $card->{"name"} );
 	}
 }
 
@@ -394,7 +394,6 @@ sub hand_short {
 	for ($i = 0; $i < 7; $i++) {
 		$card = $hand[0][$i];
 		$out .= $i . ": " . $card->{"name"} . "; ";
-		#Logios::IRC_print($self->{_nick}, "Card " . $i . " : " . $card->{"name"} . ": " . $card->{"desc"});
 	}
 	Logios::IRC_print($self->{_nick}, "Your hand: " . $out);
 }
@@ -434,13 +433,12 @@ sub play_card {
 			$rand = int(rand($Apples::nouncount));
 	}
 	$hand[0][$cardnum] = {
-			"name" => $Apples::nouns[$rand],
-			"desc" => $Apples::red{$Apples::nouns[$rand]}
+			"name" => $Apples::nouns[$rand]
 	};
 	Logios::IRC_print($self->{_nick}, "-------------");
 	#Logios::IRC_print($self->{_nick}, "Your hand is now:");
 	Logios::IRC_print($self->{_nick}, "You just drew:");
-	Logios::IRC_print($self->{_nick}, "Card " . $cardnum . " : " . $Apples::nouns[$rand] . ": " . $Apples::red{$Apples::nouns[$rand]});
+	Logios::IRC_print($self->{_nick}, "Card " . $cardnum . " : " . $Apples::nouns[$rand];
 	$self->hand_short;
 }
 
