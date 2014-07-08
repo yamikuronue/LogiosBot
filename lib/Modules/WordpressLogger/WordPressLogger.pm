@@ -120,6 +120,10 @@ sub log_upload {
 	my $date = strftime "%m/%d/%Y", localtime;
 	my $text = read_file($filename) ;
 	
+	#Sanitize input for wordpress
+	$text = escape_html($text);
+	$text =~ s/[^[:print:]\r\n]+//g;
+	
 	my $results = XMLRPC::Lite
 		->proxy($Config::wpurl . "xmlrpc.php")
 		->call("wp.newPost", 0, $Config::wpusername, $Config::wppassword, {
