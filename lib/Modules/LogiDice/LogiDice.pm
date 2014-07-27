@@ -24,12 +24,16 @@ GPL 3.0. See LogiosBot.pl for details.
 =cut
 
 #LogiosDice: Your basic dice module for Logiosbot
-use Math::Random::MT qw(rand);
+use Math::Random::MT;
+my $random;
 
 BEGIN {
 	$VERSION = 1.75;
 	$Config::modules{'LogiosDice'} = 1;
+	$random = Math::Random::MT->new(time());
 }
+
+
 
 #Examine - all modules must have this. Takes a string for input, a channel, and a nick for who said it
 sub examine {
@@ -213,7 +217,7 @@ sub parse {
 	Logios::log("Parsing " . $string);
 	
 
-	#First split on + or - to give individual tokens
+	#First split on +, or - to give individual tokens
 	#sample inputs: 1d6, 1d6+4, 1d6-3, 1d6+1d4+12, 1d20-1d4+13, et cetera. 
 	my $plus = rindex($string,'+');
 	my $minus = rindex($string,'-');
@@ -309,8 +313,10 @@ sub roll {
 		#san checks
 		if ($left > 100) { $left = 100 };
 		if ($right > 1000) { $right = 1000};
+		
+		$rerolls = 0;
 		for (my $i = 0; $i < $left; $i++) {
-			my $currdice = int(rand($right) + 1);
+			my $currdice = int($random->rand($right) + 1);
 			$total += $currdice;
 			$dicelist = $dicelist . $currdice . " ";
 			if (($mode =~ /scion/ || $mode =~ /ww/) && $currdice >= 8) {
@@ -325,6 +331,22 @@ sub roll {
 				} elsif ($mode =~ /ww/) {
 					$rerolls++;
 				}
+			}
+		}
+		
+		#do rerolls
+		if ($rerolls > 0) {
+			$dicelist .= "|| Exploding dice: ";
+		}
+		while ($rerolls > 0) {
+			my $currdice = int($random->rand($right) + 1);
+			$rerolls--;
+			$dicelist = $dicelist . $currdice . " ";
+			if (($mode =~ /scion/ || $mode =~ /ww/) && $currdice >= 8) {
+				$successes++;
+			}
+			if ($currdice == 10) {
+				$rerolls++;
 			}
 		}
 	

@@ -210,6 +210,10 @@ SUBCLASS
 	build_requires => {
 				'File::Copy' => 0,
 				'File::Find::Rule' => 0
+			},
+	test_requires => {
+				'Test::Simple' => 0,
+				'Test::MockClass' => 0
 			}
     );
   $build->create_build_script;
