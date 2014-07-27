@@ -129,7 +129,7 @@ ok($output eq "2d10: 4 8 = \x0212\x02 || +1d4: 2 = \x022\x02 || -\x022\x02", "Pa
 
 $mockRand->mock('rand' => gen_rand(2,4,8)); #Note: it rolls right to left! so that's 1d4 then 2d10
 ($total, $output) = LogiosDice::parse("2d10-1d4+2","sum");
-uok($total == 12, "Parse subtracts dice and adds nums correctly");
+ok($total == 12, "Parse subtracts dice and adds nums correctly");
 ok($output eq "2d10: 4 8 = \x0212\x02 || -1d4: 2 = \x022\x02 || +\x022\x02", "Parse gives correct output when subtracting dice and adding nums") or diag($output);
 
 
