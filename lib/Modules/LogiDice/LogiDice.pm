@@ -241,6 +241,10 @@ sub parse {
 		
 		my ($left,$right) = split(/x/,$string,2);
 		my $first = 1;
+		if ($left > 20) {
+			return("-1", "Too many repetitions, please refactor.");
+		}
+		
 		for (my $i = 0; $i < $left; $i++) {
 			my ($subtotal, $suboutput) = parse($right);
 			$total += $subtotal;
