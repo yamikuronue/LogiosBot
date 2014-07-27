@@ -25,6 +25,7 @@ GPL 3.0. See LogiosBot.pl for details.
 
 #LogiosDice: Your basic dice module for Logiosbot
 use Math::Random::MT;
+use Math::Expression::Evaluator;
 my $random;
 
 BEGIN {
@@ -211,6 +212,70 @@ sub roll_dice {
 sub parse {
 	my $string = shift;
 	my $mode = shift;
+	my ($total, $output, $expr);
+	#This is a general arithmatic parser with order of operations precedence
+	#It introduces two new operators:
+	# d : rolls the left-hand input number of dice of size equal to the right-hand input and returns the result
+	# x: does the right-hand operation the lefthand number of times
+	
+	#Order of operations: [Parens not supported]
+	# x
+	# d
+	# *, /
+	# +, -
+	
+	#sanity checks
+	if (!($string =~ /\d/)
+		|| !($string =~ /[+\-*\/dx]/)) {
+			return ($string, "No operations");
+	}
+	
+	if ($string =~ /x/i) {
+		my ($left,$right) = split(/\x/,$string,2);
+		for (my $i = 0; i <= $left; $i++) {
+			my ($subtotal, $suboutput) = parse($right);
+			$total += $subtotal;
+			$output .= $suboutput . "|Subtotal: \x02" . $subtotal . "\x02" ;
+		}
+		return($total,$output);
+	}
+	
+	my $first = 1;
+	$expr = $string;
+	while ($expr =~ /(\d+d\d+)/i) {
+		my ($dice) = $1;
+		my ($subtotal, $suboutput) = roll($dice);
+		if ($first) {
+			$first = 0;
+		} else {
+			$output .= " || ";
+		}
+		$optoperator = substr($string, index($string,$dice)-1, 1);
+		if ($optoperator eq "+" || $optoperator eq "-" || $optoperator eq "*" || $optoperator eq "/") { $output .= $optoperator; }
+		$output .= $suboutput . "= \x02" . $subtotal . "\x02";
+		$expr =~ s/$dice/$subtotal/;
+		$string =~ s/$dice//;
+	}
+	
+	while ($string =~ m/([\*\/])(\d+)/gi) {
+		my ($operator, $right) = ($1, $2);
+		$output .= " || " . $operator . "\x02" . $right . "\x02";
+	}
+	
+	while ($string =~ m/([+-])(\d+)[^d\d]?/gi) {
+		my ($operator, $right) = ($1, $2);
+		$output .= " || " . $operator . "\x02" . $right . "\x02";
+	}
+	
+	#remove any stray letters and spaces
+	$expr =~ s/[A-Za-z\s]//g;
+	$total = Math::Expression::Evaluator->new->parse($expr)->val;
+	return ($total, $output);
+}
+
+sub old_parse {
+	my $string = shift;
+	my $mode = shift;
 	my ($left, $right, $ltotal, $rtotal, $loutput, $routput);
 	my ($total, $output);
 	
@@ -254,11 +319,106 @@ sub parse {
 		Logios::log("subtract total is " . $ltotal-$rtotal);
 		return ($ltotal-$rtotal,$loutput." || -".$routput);
 	}
-	
-
 }
 
 sub roll {
+	my $dice = shift;
+	my $mode = shift;
+	my $left, my $right;
+	my $total, my $output, my $dicelist;
+	my $successes = 0;
+	my $rerolls = 0;
+	
+	
+	Logios::log("Rolling " . $dice);
+	if (!($dice =~ /d/)) {
+		Logios::log("Roll returns " . $dice);
+		return ($dice,"\x02".$dice."\x02");
+	}
+	($left, $right) = split(/d/,$dice,2);
+
+	if ($left =~ /d/) {
+		($left,$loutput) = roll($left,$mode);
+		$output .= $loutput . " || ";
+	}
+
+	if ($right =~ /d/) {
+		($right,$routput) = roll($right,$mode);
+		$output .= $routput . " || ";
+	}
+
+
+	$total = 0;
+	$dicelist = "";
+	
+	#san checks
+	if ($left > 100) { $left = 100 };
+	if ($right > 1000) { $right = 1000};
+	
+	$rerolls = 0;
+	for (my $i = 0; $i < $left; $i++) {
+		my $currdice = int($random->rand($right) + 1);
+		$total += $currdice;
+		$dicelist = $dicelist . $currdice . " ";
+		if (($mode =~ /scion/ || $mode =~ /ww/) && $currdice >= 8) {
+			$successes++;
+		} elsif($mode =~ /scion/ && $currdice == 7) {
+			#Scion counts 7s
+			$successes++;
+		}
+		if ($currdice == 10) {
+			if ($mode =~ /scion/) { 
+				$successes++;
+			} elsif ($mode =~ /ww/) {
+				$rerolls++;
+			}
+		}
+	}
+	
+	#do rerolls
+	if ($rerolls > 0) {
+		$dicelist .= "|| Exploding dice: ";
+	}
+	while ($rerolls > 0) {
+		my $currdice = int($random->rand($right) + 1);
+		$rerolls--;
+		$dicelist = $dicelist . $currdice . " ";
+		if (($mode =~ /scion/ || $mode =~ /ww/) && $currdice >= 8) {
+			$successes++;
+		}
+		if ($currdice == 10) {
+			$rerolls++;
+		}
+	}
+
+	$output .= $left . "d" . $right . ": " . $dicelist;
+	if ($mode =~ /sum/) {
+		$output .= "= \x02" . $total . "\x02";
+	} 
+	if ($mode =~/scion/ || $mode =~/ww/) {
+		#bold successes
+		$dicelist =~ s/7/\x027\x02/g;
+		$dicelist =~ s/8/\x028\x02/g;
+		$dicelist =~ s/9/\x029\x02/g;
+		$dicelist =~ s/10/\x0210\x02/g;
+		
+		#reappend
+		$output = $left . "d" . $right . ": " . $dicelist;
+		$output .= "= \x02" . $successes . "\x02 successess";
+		
+		#return the right total
+		$total = $successes;
+		
+		if ($rerolls > 0) {
+			$output .= " and \x02" . $rerolls . "\x02 rerolls";
+		}
+	}
+	
+	Logios::log("Roll returns " . $total);
+	return ($total,$output);
+}
+
+sub old_roll {
 	my $dice = shift;
 	my $mode = shift;
 	my $left, my $right;
