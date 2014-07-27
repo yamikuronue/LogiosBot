@@ -132,6 +132,17 @@ $mockRand->mock('rand' => gen_rand(2,4,8)); #Note: it rolls right to left! so th
 ok($total == 12, "Parse subtracts dice and adds nums correctly");
 ok($output eq "2d10: 4 8 = \x0212\x02 || -1d4: 2 = \x022\x02 || +\x022\x02", "Parse gives correct output when subtracting dice and adding nums") or diag($output);
 
+#Invalid input testing
+$mockRand->mock('rand' => gen_rand(2,4,8));
+($total, $output) = LogiosDice::parse("quidditch","sum");
+ok($total == 0, "Parse returns 0 for alphabetic input with a 'd'");
+ok($output eq "ditch: = \x020\x02 || quid0: = \x020\x02", "Parse gives correct output when given incorrect input") or diag($output);
+
+$mockRand->mock('rand' => gen_rand(2,4,8));
+($total, $output) = LogiosDice::parse("elephant","sum");
+ok($total == 'elephant', "Parse returns input when it cannot be parsed at all");
+ok($output eq "\x02elephant\x02", "Parse gives correct output when given incorrect input") or diag($output);
+
 
 done_testing();
 
