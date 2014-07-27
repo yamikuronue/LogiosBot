@@ -231,11 +231,17 @@ sub parse {
 	}
 	
 	if ($string =~ /x/i) {
-		my ($left,$right) = split(/\x/,$string,2);
-		for (my $i = 0; i <= $left; $i++) {
+		my ($left,$right) = split(/x/,$string,2);
+		my $first = 1;
+		for (my $i = 0; $i < $left; $i++) {
 			my ($subtotal, $suboutput) = parse($right);
 			$total += $subtotal;
-			$output .= $suboutput . "|Subtotal: \x02" . $subtotal . "\x02" ;
+			if ($first) {
+				$first = 0;
+			} else {
+				$output .= " || ";
+			}
+			$output .= $suboutput . " | Subtotal: \x02" . $subtotal . "\x02" ;
 		}
 		return($total,$output);
 	}
