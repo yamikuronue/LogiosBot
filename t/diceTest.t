@@ -160,8 +160,19 @@ ok($total == 25, "Parse delegates basic math correctly");
 
 $mockRand->mock('rand' => gen_rand(4,8,2));  
 ($total, $output) = LogiosDice::parse("2d10+1*2","sum");
-ok($total == 14, "Parse divides by dice correctly");
-ok($output eq "2d10: 4 8 = \x0212\x02 || *\x022\x02 || +\x021\x02", "Parse gives correct output when dividing by dice") or diag($output);
+ok($total == 14, "Parse observers order of operations between times and add");
+ok($output eq "2d10: 4 8 = \x0212\x02 || *\x022\x02 || +\x021\x02", "Parse gives correct output when multiplying and adding") or diag($output);
+
+#Repitition operator
+$mockRand->mock('rand' => gen_rand(4,8,2,2)); 
+($total, $output) = LogiosDice::parse("2x2d10","sum");
+ok($total == 16, "Parse observes repetition operator");
+ok($output eq "2d10: 4 8 = \x0212\x02 | Subtotal: \x0212\x02 || 2d10: 2 2 = \x024\x02 | Subtotal: \x024\x02", "Parse gives correct output when repeating operations") or diag($output);
+
+$mockRand->mock('rand' => gen_rand(4,8,2,2)); 
+($total, $output) = LogiosDice::parse("2x2d10+4","sum");
+ok($total == 24, "Parse observes repetition operator correctly when additional actions are added");
+ok($output eq "2d10: 4 8 = \x0212\x02 || +\x024\x02 | Subtotal: \x0216\x02 || 2d10: 2 2 = \x024\x02 || +\x024\x02 | Subtotal: \x028\x02", "Parse gives correct output when repeating operations") or diag($output);
 
 #Invalid input testing
 $mockRand->mock('rand' => gen_rand(2,4,8));

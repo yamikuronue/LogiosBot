@@ -1,12 +1,12 @@
-package LogiosDice;
+package HermesDice;
 
 =pod
 
 =head1 NAME
-LogiosDice: A dice module for LogiosBot
+HermesDice: A dice module for HermesBot
 
 =head1 DESCRIPTION
-A module to be used by LogiosBot for simple dice rolls. This can roll any side of dice, as well as shortcuts for Scion, World of Darkness, and BESM game systems. 
+A module to be used by HermesBot for simple dice rolls. This can roll any side of dice, as well as shortcuts for Scion, World of Darkness, and BESM game systems. 
 
 =head1 USEAGE
 Normal dice: !roll XdY[+/-]Z.
@@ -18,19 +18,19 @@ BESM: !roll besm X where X is the dice modifier
 Yamikuronue - yamikuronue at gmail.com
 
 =head1 LICENSE
-GPL 3.0. See LogiosBot.pl for details. 
+GPL 3.0. See HermesBot.pl for details. 
 
 
 =cut
 
-#LogiosDice: Your basic dice module for Logiosbot
+#HermesDice: Your basic dice module for Hermesbot
 use Math::Random::MT;
 use Math::Expression::Evaluator;
 my $random;
 
 BEGIN {
 	$VERSION = 1.75;
-	$Config::modules{'LogiosDice'} = 1;
+	$Config::modules{'HermesDice'} = 1;
 	$random = Math::Random::MT->new(time());
 }
 
@@ -44,38 +44,38 @@ sub examine {
 
 	$input =~ s/\s+$//;
 	if ($input =~ /^!roll besm ?(.+)?/i) {
-		Logios::log("Received dice roll");
+		Hermes::log("Received dice roll");
 		besm_dice($nick, $channel,$1);
 		return 1;
 	}
 	elsif ($input =~ /^!roll scion (.+)/i) {
-		Logios::log("Received dice roll");
+		Hermes::log("Received dice roll");
 		scion_dice($1, $nick, $channel);
 		return 1;
 	}
 	elsif ($input =~ /^!roll ww (.+)/i) {
-		Logios::log("Received dice roll");
+		Hermes::log("Received dice roll");
 		ww_dice($1, $nick, $channel);
 		return 1;
 	}
 	elsif ($input =~ /^!roll (.+)/i) {
-		Logios::log("Received dice roll");
+		Hermes::log("Received dice roll");
 		roll_dice($1,$nick,$channel);
 		return 1;
 	} elsif ($input =~ /^!scion (.+)/i) {
-		Logios::log("Received dice roll");
+		Hermes::log("Received dice roll");
 		scion_dice($1, $nick, $channel);
 		return 1;
 	} elsif ($input =~ /^!wwdice (.+)/i) {
-		Logios::log("Received dice roll");
+		Hermes::log("Received dice roll");
 		ww_dice($1, $nick, $channel);
 		return 1;
 	} elsif ($input =~ /^!besm ?(.+)?/i) {
-		Logios::log("Received dice roll");
+		Hermes::log("Received dice roll");
 		besm_dice($nick, $channel,$1);
 		return 1;
 	}
-	elsif ($input =~ /^!LogiosDice (.+)/i) {
+	elsif ($input =~ /^!HermesDice (.+)/i) {
 		$input = $1;
 		if ($input =~ /^help (\w+)/) {
 			topic_help($channel,$1);
@@ -85,7 +85,7 @@ sub examine {
 		}
 		return 1;
 	}		
-	elsif ($input =~ /^!LogiosDice$/) {
+	elsif ($input =~ /^!HermesDice$/) {
 		module_info($channel);
 		return 1;
 	}
@@ -97,7 +97,7 @@ sub examine {
 
 sub module_info {
 	my $where = shift;
-	Logios::IRC_print($where, "LogiosDice version $VERSION. Copyright 2011. Created by Yami Kuronue.");
+	Hermes::IRC_print($where, "HermesDice version $VERSION. Copyright 2011. Created by Yami Kuronue.");
 }
 
 sub help {
@@ -135,9 +135,9 @@ sub topic_help {
 	}
 	
 	if ($found) {
-		Logios::IRC_print($where, $response);
+		Hermes::IRC_print($where, $response);
 	} else {
-		Logios::IRC_print($where, "Command not found. Help Commands for commands");
+		Hermes::IRC_print($where, "Command not found. Help Commands for commands");
 	}
 }
 
@@ -165,10 +165,10 @@ sub scion_dice {
 		$diestring =~ s/([\+\-])/d10\1/;
 	}
 	($total,$output) = parse($diestring,"scion");
-	Logios::log("Rolled " . $total);
+	Hermes::log("Rolled " . $total);
 
 	
-	Logios::IRC_print($where,$who . " rolled " . $diestring . $comments . " || " . $output . " || Total: \x02" . $total . " successess\x02");
+	Hermes::IRC_print($where,$who . " rolled " . $diestring . $comments . " || " . $output . " || Total: \x02" . $total . " successess\x02");
 }
 
 sub ww_dice {
@@ -186,10 +186,10 @@ sub ww_dice {
 		$diestring =~ s/([\+\-])/d10\1/;
 	}
 	($total,$output) = parse($diestring,"ww");
-	Logios::log("Rolled " . $total);
+	Hermes::log("Rolled " . $total);
 
 	
-	Logios::IRC_print($where,$who . " rolled " . $diestring . $comments . " || " . $output . " || Total: \x02" . $total . " successess\x02");
+	Hermes::IRC_print($where,$who . " rolled " . $diestring . $comments . " || " . $output . " || Total: \x02" . $total . " successess\x02");
 }
 
 sub roll_dice {
@@ -200,11 +200,11 @@ sub roll_dice {
 	
 	($diestring, $comments) = split(/\s/,$input,2);
 	($total,$output) = parse($diestring,"sum");
-	Logios::log("Rolled " . $total);
+	Hermes::log("Rolled " . $total);
 
 	
-	Logios::IRC_print($where,$who . " rolled " . $input . " || " . $output . " || Total: \x02" . $total . "\x02");
-	#Logios::IRC_print($where,"Returned output: " . $output);
+	Hermes::IRC_print($where,$who . " rolled " . $input . " || " . $output . " || Total: \x02" . $total . "\x02");
+	#Hermes::IRC_print($where,"Returned output: " . $output);
 	
 
 }
@@ -231,17 +231,11 @@ sub parse {
 	}
 	
 	if ($string =~ /x/i) {
-		my ($left,$right) = split(/x/,$string,2);
-		my $first = 1;
-		for (my $i = 0; $i < $left; $i++) {
+		my ($left,$right) = split(/\x/,$string,2);
+		for (my $i = 0; i <= $left; $i++) {
 			my ($subtotal, $suboutput) = parse($right);
 			$total += $subtotal;
-			if ($first) {
-				$first = 0;
-			} else {
-				$output .= " || ";
-			}
-			$output .= $suboutput . " | Subtotal: \x02" . $subtotal . "\x02" ;
+			$output .= $suboutput . "|Subtotal: \x02" . $subtotal . "\x02" ;
 		}
 		return($total,$output);
 	}
@@ -285,7 +279,7 @@ sub old_parse {
 	my ($left, $right, $ltotal, $rtotal, $loutput, $routput);
 	my ($total, $output);
 	
-	Logios::log("Parsing " . $string);
+	Hermes::log("Parsing " . $string);
 	
 
 	#First split on +, or - to give individual tokens
@@ -295,7 +289,7 @@ sub old_parse {
 	
 	if ($plus == -1 && $minus == -1) {
 		($total,$output) = roll($string,$mode);
-		Logios::log("total is " . $total);
+		Hermes::log("total is " . $total);
 		return ($total,$output);
 	}
 	if ($plus > $minus) {
@@ -309,7 +303,7 @@ sub old_parse {
 		};
 		($ltotal,$loutput) = parse($left,$mode);
 		
-		Logios::log("add total is " . $ltotal+$rtotal);
+		Hermes::log("add total is " . $ltotal+$rtotal);
 		return ($ltotal+$rtotal,$loutput." || +".$routput);
 	} else {
 		#($left,$right) = split('-',$string,2);
@@ -322,7 +316,7 @@ sub old_parse {
 		};
 		($ltotal,$loutput) = parse($left,$mode);
 
-		Logios::log("subtract total is " . $ltotal-$rtotal);
+		Hermes::log("subtract total is " . $ltotal-$rtotal);
 		return ($ltotal-$rtotal,$loutput." || -".$routput);
 	}
 }
@@ -336,9 +330,9 @@ sub roll {
 	my $rerolls = 0;
 	
 	
-	Logios::log("Rolling " . $dice);
+	Hermes::log("Rolling " . $dice);
 	if (!($dice =~ /d/)) {
-		Logios::log("Roll returns " . $dice);
+		Hermes::log("Roll returns " . $dice);
 		return ($dice,"\x02".$dice."\x02");
 	}
 	($left, $right) = split(/d/,$dice,2);
@@ -420,7 +414,7 @@ sub roll {
 		}
 	}
 	
-	Logios::log("Roll returns " . $total);
+	Hermes::log("Roll returns " . $total);
 	return ($total,$output);
 }
 
@@ -433,9 +427,9 @@ sub old_roll {
 	my $rerolls = 0;
 	
 	
-	Logios::log("Rolling " . $dice);
+	Hermes::log("Rolling " . $dice);
 	if (!($dice =~ /d/)) {
-		Logios::log("Roll returns " . $dice);
+		Hermes::log("Roll returns " . $dice);
 		return ($dice,"\x02".$dice."\x02");
 	}
 	
@@ -444,9 +438,9 @@ sub old_roll {
 		($num,$string) = split(/x/,$dice,2);
 		$output = "";
 		if ($num > 100) { $num = 100 };
-		Logios::log("num " . $num . " string " . $string);
+		Hermes::log("num " . $num . " string " . $string);
 		for (my $i = 0; $i < $num; $i++) {
-			Logios::log("Loop " . $i);
+			Hermes::log("Loop " . $i);
 			($subtotal,$minioutput) = roll($string,$mode);
 			$total += $subtotal;
 			if ($output == "") {
@@ -456,7 +450,7 @@ sub old_roll {
 			}
 			
 		}
-		Logios::log("Meta Roll returns " . $total);
+		Hermes::log("Meta Roll returns " . $total);
 		return ($total,$output);
 	} else {
 	
@@ -540,8 +534,8 @@ sub old_roll {
 		}
 	
 		
-		Logios::log("TEST: " . $output);
-		Logios::log("Roll returns " . $total);
+		Hermes::log("TEST: " . $output);
+		Hermes::log("Roll returns " . $total);
 		return ($total,$output);
 	}
 	
