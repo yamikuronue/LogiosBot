@@ -231,6 +231,14 @@ sub parse {
 	}
 	
 	if ($string =~ /x/i) {
+		#Safety first!
+		my @recurses = $string =~ /x/g;
+		my $recursioncount = @recurses;
+		if ($recursioncount > 3) {
+			return("-1", "Too many x's, please refactor.");
+		}
+		
+		
 		my ($left,$right) = split(/x/,$string,2);
 		my $first = 1;
 		for (my $i = 0; $i < $left; $i++) {
