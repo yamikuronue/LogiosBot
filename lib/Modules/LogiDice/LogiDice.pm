@@ -280,7 +280,7 @@ sub parse {
 		$output .= " || " . $operator . "\x02" . $right . "\x02";
 	}
 	
-	while ($string =~ m/([+-])(\d+)[^d\d]?/gi) {
+	while ($string =~ m/([+-])(\d+)(?!d)/gi) {
 		my ($operator, $right) = ($1, $2);
 		$output .= " || " . $operator . "\x02" . $right . "\x02";
 	}
