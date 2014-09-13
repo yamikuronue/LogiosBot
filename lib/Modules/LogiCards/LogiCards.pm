@@ -145,5 +145,23 @@ sub new_deck {
 	Logios::IRC_print($where, "Deck " . $deckname . " created (Type: " . $type . ")");
 }
 
+sub draw_card {
+	my($nick) = shift;
+	my($chan) = shift;
+	my($num) = shift;
+	my($deck) = shift;
+	
+	if ($num > $Decks{$deck}) {
+		Logios::IRC_print($where, "The deck is empty!");
+		return;
+	}
+	
+	my iterator = 0;
+	while (iterator < $num) {
+		
+	}
+	
+}
+
 
 1;
