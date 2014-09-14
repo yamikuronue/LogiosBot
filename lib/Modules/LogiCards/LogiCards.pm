@@ -36,6 +36,7 @@ GPL 3.0. See LogiosBot.pl for details.
 use Math::Random::MT;
 my $random;
 %Decks;
+%Decktypes;
 my $nextint = 1;
 
 BEGIN {
@@ -136,14 +137,59 @@ sub new_deck {
 		return;
 	}	
 	
-	#open my $handle, '<', $filename;
-	my @deck = read_file($filename);
-	#close $handle;
-	
 	my $deckname = "deck" . $nextint++;
-	$Decks{$deckname} = [@deck];
+	make_deck($deckname, $filename);
+	
+	$Decktypes{$deckname} = $type;
 	Logios::IRC_print($where, "Deck " . $deckname . " created (Type: " . $type . ")");
 }
 
+sub make_deck {
+	my($deckname) = shift;
+	my($filename) = shift;
+	
+	my @deck = read_file($filename);
+	
+	$Decks{$deckname} = [@deck];
+}
 
+sub draw_card {
+	my($nick) = shift;
+	my($chan) = shift;
+	my($num) = shift;
+	my($deck) = shift;
+	
+	my $numcards = scalar(@{$Decks{$deck}});
+	
+	if ($num > $numcards) {
+		Logios::IRC_print($where, "The deck is empty!");
+		return;
+	} else {
+	
+		my @theDeck = @{$Decks{$deck}};
+		my $iterator = 0;
+		while ($iterator < $num) {
+			my $card = splice(@theDeck, $random->rand($numcards), 1);
+			Logios::IRC_print($where, "Your card is " . $card);
+			$iterator++; $numcards--;
+		}
+		$Decks{$deck} = [@theDeck]; #Save the altered deck back to our deck list
+	}	
+}
+
+sub shuffle_deck {
+	my($nick) = shift;
+	my($chan) = shift;
+	my($deck) = shift;
+	
+
+	$filename = $Config::CardsDirectory . $Decktypes{$deck} . ".txt"; 
+	if (!(-e $filename)) { 
+		Logios::IRC_print($where, "Deck " . $type . " not found.");
+		return;
+	}	
+	
+	make_deck($deck, $filename);
+	Logios::IRC_print($where, "Deck " . $deck . " is now shuffled.");
+}
 1;
