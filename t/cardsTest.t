@@ -1,6 +1,7 @@
 ###Pretend to be a config file
 package Config;
-our $CardsDirectory = "/vagrant/lib/Modules/LogiCards/";
+use FindBin;
+our $CardsDirectory = "$FindBin::Bin/../lib/Modules/LogiCards/";
 
 package Testing;
 
