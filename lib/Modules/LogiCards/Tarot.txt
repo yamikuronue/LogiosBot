@@ -1,0 +1,78 @@
+0. The Fool
+1. The Magican
+2. The High Priestess
+3. The Empress 
+4. The Emperor
+5. The Hierophant
+6. The Lovers
+7. The Chariot
+8. Justice
+9. The Hermit
+10. The Wheel
+11. Strength
+12. The Hanged Man
+13. Death
+14. Temperance
+15. The Devil
+16. The Tower
+17. The Star
+18. The Moon
+19. The Sun
+20. Judgement
+21. The World
+ace of wands
+ace of cups
+ace of swords
+ace of pentacles
+two of wands
+two of cups
+two of swords
+two of pentacles
+three of wands
+three of cups
+three of swords
+three of pentacles
+four of wands
+four of cups
+four of swords
+four of pentacles
+five of wands
+five of cups 
+five of swords 
+five of pentacles
+six of wands
+six of cups 
+six of swords
+six of pentacles 
+seven of wands
+seven of cups 
+seven of swords
+seven of pentacles 
+eight of wands
+eight of cups
+eight of swords
+eight of pentacles
+nine of wands
+nine of cups 
+nine of swords
+nine of pentacles 
+ten of wands 
+ten of cups 
+ten of swords
+ten of pentacles 
+the page of wands.
+page of cups
+page of swords 
+page of pentacles
+king of wands 
+king of cups
+king of swords
+knight of pentacles
+queen of wands
+queen of cups
+queen of swords
+queen of pentacles 
+king of wands
+king of cups 
+king of swords
+king of pentacles
