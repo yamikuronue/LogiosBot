@@ -54,18 +54,22 @@ sub examine {
 	my $nick = shift;
 
 	$input =~ s/\s+$//;
-	if ($input =~ /^!roll besm ?(.+)?/i) {
-		Logios::log("Received dice roll");
-		besm_dice($nick, $channel,$1);
-		return 1;
-	}
-	elsif ($input =~ /^!LogiCards (.+)/i) {
+	if ($input =~ /^!cards (.+)/i) {
 		$input = $1;
 		if ($input =~ /^help (\w+)/) {
 			topic_help($channel,$1);
 		}
 		elsif ($input =~ /help/) {
 			help($channel);
+		}
+		elsif ($input =~ /^new (\w+)/i) {
+			new_deck($nick, $channel,$1);
+		}
+		elsif ($input =~ /^draw (\d+) from (\w+)/i) {
+			draw_card($nick, $channel,$1,$2);
+		}
+		elsif ($input =~ /^shuffle (\w+)/i) {
+			shuffle_deck($nick, $channel,$1);
 		}
 		return 1;
 	}		
@@ -133,7 +137,7 @@ sub new_deck {
 	
 	$filename = $Config::CardsDirectory . $type . ".txt"; 
 	if (!(-e $filename)) { 
-		Logios::IRC_print($where, "Deck " . $type . " not found.");
+		Logios::IRC_print($chan, "Deck " . $type . " not found.");
 		return;
 	}	
 	
@@ -141,7 +145,7 @@ sub new_deck {
 	make_deck($deckname, $filename);
 	
 	$Decktypes{$deckname} = $type;
-	Logios::IRC_print($where, "Deck " . $deckname . " created (Type: " . $type . ")");
+	Logios::IRC_print($chan, "Deck " . $deckname . " created (Type: " . $type . ")");
 }
 
 sub make_deck {
@@ -161,16 +165,22 @@ sub draw_card {
 	
 	my $numcards = scalar(@{$Decks{$deck}});
 	
-	if ($num > $numcards) {
-		Logios::IRC_print($where, "The deck is empty!");
+	if (!defined $Decks{$deck}) {
+		Logios::IRC_print($chan, "No such deck: " . $deck);
 		return;
+	}
+	
+	if ($numcards == 0) {
+		Logios::IRC_print($chan, "The deck is empty!");
+	} elsif ($num > $numcards) {
+		Logios::IRC_print($chan, "Cannot draw " . $num . " cards, deck only has " . $numcards . " remaining.");
 	} else {
 	
 		my @theDeck = @{$Decks{$deck}};
 		my $iterator = 0;
 		while ($iterator < $num) {
 			my $card = splice(@theDeck, $random->rand($numcards), 1);
-			Logios::IRC_print($where, "Your card is " . $card);
+			Logios::IRC_print($chan, "Your card is " . $card);
 			$iterator++; $numcards--;
 		}
 		$Decks{$deck} = [@theDeck]; #Save the altered deck back to our deck list
@@ -182,14 +192,18 @@ sub shuffle_deck {
 	my($chan) = shift;
 	my($deck) = shift;
 	
+	if (!defined $Decks{$deck}) {
+		Logios::IRC_print($chan, "No such deck: " . $deck);
+		return;
+	}
 
 	$filename = $Config::CardsDirectory . $Decktypes{$deck} . ".txt"; 
 	if (!(-e $filename)) { 
-		Logios::IRC_print($where, "Deck " . $type . " not found.");
+		Logios::IRC_print($chan, "Deck " . $type . " not found.");
 		return;
 	}	
 	
 	make_deck($deck, $filename);
-	Logios::IRC_print($where, "Deck " . $deck . " is now shuffled.");
+	Logios::IRC_print($chan, "Deck " . $deck . " is now shuffled.");
 }
 1;

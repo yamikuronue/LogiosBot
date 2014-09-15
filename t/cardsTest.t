@@ -46,7 +46,7 @@ is($Logios::num_outputs,50, "50 cards output when drawing 50.");
 
 $Logios::num_outputs = 0;
 LogiosCards::draw_card("nick","chan",2,"deck1");
-ok($Logios::last_out =~ /The deck is empty!/, "Deck should be empty when drawing 2 cards after drawing 51");
+ok($Logios::last_out =~ /^Cannot draw 2 cards, deck only has 1 remaining.$/, "Deck should be empty when drawing 2 cards after drawing 51");
 is($Logios::num_outputs,1, "Only one output when drawing 2 cards but deck is empty");
 
 LogiosCards::draw_card("nick","chan",1,"deck1");

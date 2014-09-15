@@ -1,5 +1,5 @@
 help	Provides help. Use Help Commands for commands
-commands	Current list of commands: !roll, !scion, !besm, !wwdice
-roll	Rolls dice. Syntax: !roll XdY[+/-]Z. Also can be used to roll specific game dice !roll scion, !roll besm, and !roll ww behave the same as !scion,!besm, and !wwdice
-scion	Rolls dice for Scion. Syntax: !roll scion X[+/-]Y where X is the size of the dice pool and Y is any automatic successes or failures
-wwdice	Rolls dice for New World of Darkness. Syntax: !roll ww X[+/-]Y where X is the size of the dice pool and Y is any automatic successes or failures
+commands	Current list of commands: new, draw, shuffle
+new		Creates a new deck. Syntax: !cards new [type]. 
+draw	Draw a card from a deck. Syntax: !cards draw [num] from [deck]
+shuffle	Shuffles all the drawn cards back into the deck. Syntax: !cards shuffle [deck]
