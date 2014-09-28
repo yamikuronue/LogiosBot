@@ -230,6 +230,7 @@ sub parse {
 			return ($string, "No operations");
 	}
 	
+	#Operator: X
 	if ($string =~ /x/i) {
 		#Safety first!
 		my @recurses = $string =~ /x/g;
@@ -260,9 +261,10 @@ sub parse {
 	
 	my $first = 1;
 	$expr = $string;
+	#Operator: D
 	while ($expr =~ /(\d+d\d+)/i) {
 		my ($dice) = $1;
-		my ($subtotal, $suboutput) = roll($dice);
+		my ($subtotal, $suboutput) = roll($dice, $mode);
 		if ($first) {
 			$first = 0;
 		} else {
@@ -274,12 +276,13 @@ sub parse {
 		$expr =~ s/$dice/$subtotal/;
 		$string =~ s/$dice//;
 	}
-	
+	#Operator: *, /
 	while ($string =~ m/([\*\/])(\d+)/gi) {
 		my ($operator, $right) = ($1, $2);
 		$output .= " || " . $operator . "\x02" . $right . "\x02";
 	}
 	
+	#Operator: +, -
 	while ($string =~ m/([+-])(\d+)(?!d)/gi) {
 		my ($operator, $right) = ($1, $2);
 		$output .= " || " . $operator . "\x02" . $right . "\x02";
@@ -411,7 +414,8 @@ sub roll {
 
 	$output .= $left . "d" . $right . ": " . $dicelist;
 	if ($mode =~ /sum/) {
-		$output .= "= \x02" . $total . "\x02";
+		#This is now handled in the parse method
+		#$output .= "= \x02" . $total . "\x02";
 	} 
 	if ($mode =~/scion/ || $mode =~/ww/) {
 		#bold successes
@@ -422,7 +426,7 @@ sub roll {
 		
 		#reappend
 		$output = $left . "d" . $right . ": " . $dicelist;
-		$output .= "= \x02" . $successes . "\x02 successess";
+		$output .= "= \x02" . $successes . "\x02 successess ";
 		
 		#return the right total
 		$total = $successes;

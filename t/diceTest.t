@@ -41,12 +41,12 @@ ok(1 <= $total && $total <= 1000, "Max dice size capped at 1000") or diag("We so
 $mockRand->mock('rand' => gen_rand(1,1,1));
 ($total, $output) = LogiosDice::roll("3d10","ww");
 ok($total == 0, "WhiteWolf mode can return 0 successes") or diag ("Reported " . $total . " successes instead.");
-ok($output eq "3d10: 1 1 1 = \x02".$total."\x02 successess", "WhiteWolf mode reports no successes correctly") or diag ("Reported '" . $output . "' instead.");
+ok($output eq "3d10: 1 1 1 = \x02".$total."\x02 successess ", "WhiteWolf mode reports no successes correctly") or diag ("Reported '" . $output . "' instead.");
 
 $mockRand->mock('rand' => gen_rand(9,9,9));
 ($total, $output) = LogiosDice::roll("3d10","ww");
 ok($total == 3, "WhiteWolf mode can return 3 successes") or diag ("Reported " . $total . " successes instead.");
-ok($output eq "3d10: \x029\x02 \x029\x02 \x029\x02 = \x02".$total."\x02 successess", "WhiteWolf mode reports successes correctly") or diag ("Reported '" . $output . "' instead.");
+ok($output eq "3d10: \x029\x02 \x029\x02 \x029\x02 = \x02".$total."\x02 successess ", "WhiteWolf mode reports successes correctly") or diag ("Reported '" . $output . "' instead.");
 
 $mockRand->mock('rand' => gen_rand(7,7,7));
 ($total, $output) = LogiosDice::roll("3d10","ww");
@@ -60,12 +60,12 @@ ok($total == 4, "WhiteWolf mode can explode dice to return 4 successes on 3 roll
 $mockRand->mock('rand' => gen_rand(1,1,1));
 ($total, $output) = LogiosDice::roll("3d10","scion");
 ok($total == 0, "Scion mode can return 0 successes") or diag ("Reported " . $total . " successes instead.");
-ok($output eq "3d10: 1 1 1 = \x020\x02 successess", "Scion mode reports no successes correctly") or diag ("Reported '" . $output . "' instead.");
+ok($output eq "3d10: 1 1 1 = \x020\x02 successess ", "Scion mode reports no successes correctly") or diag ("Reported '" . $output . "' instead.");
 
 $mockRand->mock('rand' => gen_rand(9,9,9));
 ($total, $output) = LogiosDice::roll("3d10","scion");
 ok($total == 3, "Scion mode can return 3 successes") or diag ("Reported " . $total . " successes instead.");
-ok($output eq "3d10: \x029\x02 \x029\x02 \x029\x02 = \x02".$total."\x02 successess", "Scion mode reports successes correctly") or diag ("Reported '" . $output . "' instead.");
+ok($output eq "3d10: \x029\x02 \x029\x02 \x029\x02 = \x02".$total."\x02 successess ", "Scion mode reports successes correctly") or diag ("Reported '" . $output . "' instead.");
 
 $mockRand->mock('rand' => gen_rand(7,7,7));
 ($total, $output) = LogiosDice::roll("3d10","scion");
@@ -185,6 +185,45 @@ $mockRand->mock('rand' => gen_rand(2,4,8));
 ok($total == 'elephant', "Parse returns input when it cannot be parsed at all") or diag("Total was: " . $total);
 ok($output eq "No operations", "Parse gives correct output when given incorrect input") or diag("Output was: " . $output);
 
+#Parse in non-sum
+#ww mode counts successes, let's be sure 
+$mockRand->mock('rand' => gen_rand(1,1,1));
+($total, $output) = LogiosDice::parse("3d10","ww");
+ok($total == 0, "WhiteWolf mode can return 0 successes") or diag ("Reported " . $total . " successes instead.");
+ok($output eq "3d10: 1 1 1 = \x02".$total."\x02 successess = \x02" . $total . "\x02", "WhiteWolf mode reports no successes correctly from parse") or diag ("Reported '" . $output . "' instead.");
+
+$mockRand->mock('rand' => gen_rand(9,9,9));
+($total, $output) = LogiosDice::parse("3d10","ww");
+ok($total == 3, "WhiteWolf mode can return 3 successes") or diag ("Reported " . $total . " successes instead.");
+ok($output eq "3d10: \x029\x02 \x029\x02 \x029\x02 = \x02".$total."\x02 successess = \x02" . $total . "\x02", "WhiteWolf mode reports successes correctly from parse") or diag ("Reported '" . $output . "' instead.");
+
+$mockRand->mock('rand' => gen_rand(7,7,7));
+($total, $output) = LogiosDice::parse("3d10","ww");
+ok($total == 0, "WhiteWolf mode does not count 7 as success") or diag ("Reported " . $total . " successes instead.");
+
+$mockRand->mock('rand' => gen_rand(9,9,10,9));
+($total, $output) = LogiosDice::parse("3d10","ww");
+ok($total == 4, "WhiteWolf mode can explode dice to return 4 successes on 3 rolls") or diag ("Reported " . $total . " successes instead.");
+
+#scion mode also counts successes, but differently
+$mockRand->mock('rand' => gen_rand(1,1,1));
+($total, $output) = LogiosDice::parse("3d10","scion");
+ok($total == 0, "Scion mode can return 0 successes") or diag ("Reported " . $total . " successes instead.");
+ok($output eq "3d10: 1 1 1 = \x020\x02 successess = \x02" . $total . "\x02", "Scion mode reports no successes correctly") or diag ("Reported '" . $output . "' instead.");
+
+$mockRand->mock('rand' => gen_rand(9,9,9));
+($total, $output) = LogiosDice::parse("3d10","scion");
+ok($total == 3, "Scion mode can return 3 successes") or diag ("Reported " . $total . " successes instead.");
+ok($output eq "3d10: \x029\x02 \x029\x02 \x029\x02 = \x02".$total."\x02 successess = \x02" . $total . "\x02", "Scion mode reports successes correctly") or diag ("Reported '" . $output . "' instead.");
+
+$mockRand->mock('rand' => gen_rand(7,7,7));
+($total, $output) = LogiosDice::parse("3d10","scion");
+ok($total == 3, "Scion mode counts 7 as success") or diag ("Reported " . $total . " successes instead.");
+
+#Scion dice do not explode, but ten counts twice
+$mockRand->mock('rand' => gen_rand(9,9,10,10,10,9));
+($total, $output) = LogiosDice::parse("3d10","scion");
+ok($total == 4, "Scion mode cannot explode dice") or diag ("Reported " . $total . " successes instead.");
 
 done_testing();
 
