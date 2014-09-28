@@ -168,7 +168,7 @@ sub scion_dice {
 	Logios::log("Rolled " . $total);
 
 	
-	Logios::IRC_print($where,$who . " rolled " . $diestring . $comments . " || " . $output . " || Total: \x02" . $total . " successess\x02");
+	Logios::IRC_print($where,$who . " rolled " . $diestring . $comments . " || " . $output . " || Total: \x02" . $total . " successes\x02");
 }
 
 sub ww_dice {
@@ -189,7 +189,7 @@ sub ww_dice {
 	Logios::log("Rolled " . $total);
 
 	
-	Logios::IRC_print($where,$who . " rolled " . $diestring . $comments . " || " . $output . " || Total: \x02" . $total . " successess\x02");
+	Logios::IRC_print($where,$who . " rolled " . $diestring . $comments . " || " . $output . " || Total: \x02" . $total . " successes\x02");
 }
 
 sub roll_dice {
@@ -247,7 +247,7 @@ sub parse {
 		}
 		
 		for (my $i = 0; $i < $left; $i++) {
-			my ($subtotal, $suboutput) = parse($right);
+			my ($subtotal, $suboutput) = parse($right,$mode);
 			$total += $subtotal;
 			if ($first) {
 				$first = 0;
@@ -272,7 +272,7 @@ sub parse {
 		}
 		$optoperator = substr($string, index($string,$dice)-1, 1);
 		if ($optoperator eq "+" || $optoperator eq "-" || $optoperator eq "*" || $optoperator eq "/") { $output .= $optoperator; }
-		$output .= $suboutput . "= \x02" . $subtotal . "\x02";
+		$output .= $suboutput;
 		$expr =~ s/$dice/$subtotal/;
 		$string =~ s/$dice//;
 	}
@@ -414,8 +414,7 @@ sub roll {
 
 	$output .= $left . "d" . $right . ": " . $dicelist;
 	if ($mode =~ /sum/) {
-		#This is now handled in the parse method
-		#$output .= "= \x02" . $total . "\x02";
+		$output .= "= \x02" . $total . "\x02";
 	} 
 	if ($mode =~/scion/ || $mode =~/ww/) {
 		#bold successes
@@ -426,7 +425,7 @@ sub roll {
 		
 		#reappend
 		$output = $left . "d" . $right . ": " . $dicelist;
-		$output .= "= \x02" . $successes . "\x02 successess ";
+		$output .= "= \x02" . $successes . "\x02 successes";
 		
 		#return the right total
 		$total = $successes;
@@ -545,7 +544,7 @@ sub old_roll {
 			
 			#reappend
 			$output = $left . "d" . $right . ": " . $dicelist;
-			$output .= "= \x02" . $successes . "\x02 successess";
+			$output .= "= \x02" . $successes . "\x02 successes";
 			
 			#return the right total
 			$total = $successes;
