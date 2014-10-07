@@ -56,7 +56,7 @@ sub examine {
 	elsif ($input =~ /^help$/i) {
 		help($channel);
 	}
-	elsif ($input =~ /^upload (\w*)/i) {
+	elsif ($input =~ /^upload (\w+)/i) {
 		Logios::log("Received upload request");
 		log_upload($channel, $1);
 	}
