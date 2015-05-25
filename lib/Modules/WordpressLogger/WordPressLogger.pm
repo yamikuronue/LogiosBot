@@ -122,7 +122,9 @@ sub log_upload {
 	
 	#Sanitize input for wordpress
 	$text = escape_html($text);
-	$text =~ s/[^[:print:]\r\n]+//g;
+	$text =~ s/\x20([^\x20\x0F]+)[\x20\x0F]?/<b>$1<\/b>/g; #bold bolded text in logs
+	$text =~ s/[^[:print:]\r\n]+//g; #Remove control chars
+
 	
 	my $results = XMLRPC::Lite
 		->proxy($Config::wpurl . "xmlrpc.php")
