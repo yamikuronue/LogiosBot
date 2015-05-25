@@ -32,4 +32,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		inline: "cpan -j /vagrant/CPANConfig.pm install local::lib"
 	config.vm.provision "shell",
 		inline: "cpan -j /vagrant/CPANConfig.pm install Module::Build"
+		
+	#Because dependency install is annoying
+	config.vm.provision "shell",
+		inline: "perl Build.pl"
+		
+	config.vm.provision "shell",
+		inline: "yes || ./Build installdeps"
 end

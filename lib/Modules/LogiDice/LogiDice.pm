@@ -276,6 +276,25 @@ sub parse {
 		$expr =~ s/$dice/$subtotal/;
 		$string =~ s/$dice//;
 	}
+	#Fate dice
+	while ($expr =~ /(\d+dF)/i) {
+		my ($dice) = $1;
+		my $real_dice = $dice;
+		$real_dice =~ s/F/6/;
+		my ($subtotal, $suboutput) = roll($real_dice, "fate");
+		$suboutput =~ s/d6/dF/;
+		
+		if ($first) {
+			$first = 0;
+		} else {
+			$output .= " || ";
+		}
+		$optoperator = substr($string, index($string,$dice)-1, 1);
+		if ($optoperator eq "+" || $optoperator eq "-" || $optoperator eq "*" || $optoperator eq "/") { $output .= $optoperator; }
+		$output .= $suboutput;
+		$expr =~ s/$dice/$subtotal/;
+		$string =~ s/$dice//;
+	}
 	#Operator: *, /
 	while ($string =~ m/([\*\/])(\d+)/gi) {
 		my ($operator, $right) = ($1, $2);
@@ -303,6 +322,7 @@ sub roll {
 	my $rerolls = 0;
 	
 	
+	
 	Logios::log("Rolling " . $dice);
 	if (!($dice =~ /d/)) {
 		Logios::log("Roll returns " . $dice);
@@ -310,6 +330,10 @@ sub roll {
 	}
 	($left, $right) = split(/d/,$dice,2);
 
+	#Precondition for fate
+	if ($mode =~ /fate/ && $right != 6) {
+		return (0, "invalid size for F dice!")
+	}
 	if ($left =~ /d/) {
 		($left,$loutput) = roll($left,$mode);
 		$output .= $loutput . " || ";
@@ -331,7 +355,11 @@ sub roll {
 	$rerolls = 0;
 	for (my $i = 0; $i < $left; $i++) {
 		my $currdice = int($random->rand($right) + 1);
-		$total += $currdice;
+		if ($mode =~ /sum/) {$total += $currdice};
+		if ($mode =~ /fate/) {
+			if ($currdice == 5 || $currdice == 6) { $total++ };
+			if ($currdice == 1 || $currdice == 2) { $total-- };
+		}
 		$dicelist = $dicelist . $currdice . " ";
 		if (($mode =~ /scion/ || $mode =~ /ww/) && $currdice >= 8) {
 			$successes++;
@@ -346,6 +374,7 @@ sub roll {
 				$rerolls++;
 			}
 		}
+
 	}
 	
 	#do rerolls
@@ -364,10 +393,22 @@ sub roll {
 		}
 	}
 
-	$output .= $left . "d" . $right . ": " . $dicelist;
+	
 	if ($mode =~ /sum/) {
+		$output .= $left . "d" . $right . ": " . $dicelist;
 		$output .= "= \x02" . $total . "\x02";
-	} 
+	}
+	
+	
+	if ($mode =~ /fate/) {
+		$dicelist =~ s/[12]/[\x02-\x02]/g;
+		$dicelist =~ s/[34]/[\x020\x02]/g;
+		$dicelist =~ s/[56]/[\x02+\x02]/g;
+		
+		$output .= $left . "d" . $right . ": " . $dicelist;
+		$output .= "= \x02" . $total . "\x02";
+	}
+	
 	if ($mode =~/scion/ || $mode =~/ww/) {
 		#bold successes
 		$dicelist =~ s/7/\x027\x02/g;

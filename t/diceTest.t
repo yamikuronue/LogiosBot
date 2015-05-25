@@ -37,6 +37,19 @@ ok(100 <= $total && $total <= 200, "Only 100 dice rolled at most") or diag("We s
 ($total, $output) = LogiosDice::roll("1d4000","sum");
 ok(1 <= $total && $total <= 1000, "Max dice size capped at 1000") or diag("We somehow rolled a total of " . $total . " instead");
 
+#One dF
+($total, $output) = LogiosDice::roll("1d6","fate");
+ok(-1 <= $total && $total <= 1, "1dF in fate mode should be between -1 and 1 inclusive") or diag("We somehow rolled a total of " . $total . " instead");
+
+#two dF
+($total, $output) = LogiosDice::roll("2d6","fate");
+ok(-2 <= $total && $total <= 2, "2dF should be between -2 and 2 inclusive") or diag("We somehow rolled a total of " . $total . " instead");
+
+#invalid dF
+($total, $output) = LogiosDice::roll("1d2","fate");
+ok($total == 0, "No total should be returned for invalid fate die") or diag("We somehow rolled a total of " . $total . " instead");
+ok($output eq "invalid size for F dice!","Invalid size Fate dice should fail");
+
 #ww mode counts successes, let's be sure 
 $mockRand->mock('rand' => gen_rand(1,1,1));
 ($total, $output) = LogiosDice::roll("3d10","ww");
@@ -224,6 +237,22 @@ ok($total == 3, "Scion mode counts 7 as success") or diag ("Reported " . $total 
 $mockRand->mock('rand' => gen_rand(9,9,10,10,10,9));
 ($total, $output) = LogiosDice::parse("3d10","scion");
 ok($total == 4, "Scion mode cannot explode dice") or diag ("Reported " . $total . " successes instead.");
+
+#Activating fate mode! 
+$mockRand->mock('rand' => gen_rand(1,2,1));
+($total, $output) = LogiosDice::parse("3dF","sum");
+ok($total == -3, "Fate mode activated (negative)") or diag ("Reported " . $total . " as the total instead.");
+ok($output eq "3dF: [\x02-\x02] [\x02-\x02] [\x02-\x02] = \x02-3\x02", "Fate mode reports correctly from parse when negative") or diag ("Reported '" . $output . "' instead.");
+
+$mockRand->mock('rand' => gen_rand(3,4,3));
+($total, $output) = LogiosDice::parse("3dF","sum");
+ok($total == 0, "Fate mode activated (0)") or diag ("Reported " . $total . " as the total instead.");
+ok($output eq "3dF: [\x020\x02] [\x020\x02] [\x020\x02] = \x020\x02", "Fate mode reports correctly when zero") or diag ("Reported '" . $output . "' instead.");
+
+$mockRand->mock('rand' => gen_rand(5,6,5));
+($total, $output) = LogiosDice::parse("3dF","sum");
+ok($total == 3, "Fate mode activated (positive)") or diag ("Reported " . $total . " as the total instead.");
+ok($output eq "3dF: [\x02+\x02] [\x02+\x02] [\x02+\x02] = \x023\x02", "Fate mode reports correctly when positive") or diag ("Reported '" . $output . "' instead.");
 
 done_testing();
 
